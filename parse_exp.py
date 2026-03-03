@@ -89,32 +89,6 @@ def eval_expr(ast, env):
     if ast[0] == '*':
         return a ^ b
 
-def print_robdd(root):
-    seen = set()
-    stack = [root]
-    while stack:
-        n = stack.pop()
-        if n.id in seen or n in (ZERO, ONE):
-            continue
-        seen.add(n.id)
-        print(f"id={n.id} var={n.var} left={n.left.id} right={n.right.id}")
-        stack.append(n.left)
-        stack.append(n.right)
-    print("ZERO = 0")
-    print("ONE = 1")
-    print("ROOT =", root.id)
-
-def print_bdd(node, prefix="", edge=""):
-    if node == ZERO:
-        print(prefix + edge + "0")
-        return
-    if node == ONE:
-        print(prefix + edge + "1")
-        return
-    print(prefix + edge + f"[{node.var}]")
-    print_bdd(node.left, prefix + " │   ", "├─0→ ")
-    print_bdd(node.right, prefix + "     ", "└─1→ ")
-
 def to_dot(root):
     lines = ["digraph ROBDD {", "rankdir=TB;"]
     seen = set()
