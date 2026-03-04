@@ -1,6 +1,6 @@
 import subprocess
 from parse_exp import build_robdd_from_expr, to_dot 
-from operator import bdd_and, bdd_or, bdd_xor
+from ROBDD_operator import bdd_and, bdd_or, bdd_xor
 
 if __name__ == "__main__":
     expr = "(x+y).!z"
