@@ -1,8 +1,11 @@
 from parse_exp import ZERO, ONE
 
-def operator_function(rootA, rootB, ope, robdd, save={}):
+def operator_function(rootA, rootB, ope, robdd, save=None):
+    if save is None:
+        save={}
+        
     if (ope, rootA.id, rootB.id) in save:
-        return save[(ope, rootA.id, rootA.id)]
+        return save[(ope, rootA.id, rootB.id)]
     
     if rootA in (ZERO, ONE) and rootB in (ZERO, ONE):
         a = 1 if rootA == ONE else 0
@@ -22,7 +25,7 @@ def operator_function(rootA, rootB, ope, robdd, save={}):
     elif rootB in (ZERO, ONE):
         var = rootA.var
     else:
-        if robdd.var_index[rootA.var] <= robdd.var_index[rootA.var]:
+        if robdd.var_index[rootA.var] <= robdd.var_index[rootB.var]:
             var = rootA.var
         else:
             var = rootB.var
