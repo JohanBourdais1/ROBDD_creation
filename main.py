@@ -1,6 +1,6 @@
 import subprocess
 from parse_exp import build_robdd_from_expr, to_dot, ROBDD
-from ROBDD_operator import bdd_and, bdd_or, bdd_xor
+from operator_robdd import bdd_and, bdd_or, bdd_xor
 
 if __name__ == "__main__":
     """2.4 Vérification d'équivalence
@@ -38,13 +38,13 @@ if __name__ == "__main__":
     """2.5 Applications
     """
     print("2.5 Applications\n")
-    expra="a.b"
-    exprb="c.d"
-    exprc="e.f"
-    exprd="g.h"
-    expre="i.j"
-    order1 = ["a","b","c","d","e","f","g","h","i","j"]
-    order2 = ["a","c","e","g","i","b","d","f","h","j"]
+    expra="x1.y1"
+    exprb="x2.y2"
+    exprc="x3.y3"
+    exprd="x4.y4"
+    expre="x5.y5"
+    order1 = ["x1","y1","x2","y2","x3","y3","x4","y4","x5","y5"]
+    order2 = ["x1","x2","x3","x4","x5","y1","y2","y3","y4","y5"]
     robdd1 = ROBDD(order1)
     robdd2 = ROBDD(order2)
     ra1 = build_robdd_from_expr(expra,order1)
@@ -82,13 +82,13 @@ if __name__ == "__main__":
     )
     print("\n")
     
-    expra="!a*b"
-    exprb="!c*d"
-    exprc="!e*f"
-    exprd="!g*h"
-    expre="!i*j"
-    order1 = ["a","b","c","d","e","f","g","h","i","j"]
-    order2 = ["a","c","e","g","i","b","d","f","h","j"]
+    expra="!x1*y1"
+    exprb="!x2*y2"
+    exprc="!x3*y3"
+    exprd="!x4*y4"
+    expre="!x5*y5"
+    order1 = ["x1","y1","x2","y2","x3","y3","x4","y4","x5","y5"]
+    order2 = ["x1","x2","x3","x4","x5","y1","y2","y3","y4","y5"]
     robdd1 = ROBDD(order1)
     robdd2 = ROBDD(order2)
     ra1 = build_robdd_from_expr(expra,order1)
@@ -125,4 +125,20 @@ if __name__ == "__main__":
         check=True
     )
     print("\n")
+    """
+    print("2.5.1 test")
+    expr = "(x1.y1)*(x2.y2)*(x3.y3)*(x4.y4)*(x5.y5)"
+    order1 = ["x1","y1","x2","y2","x3","y3","x4","y4","x5","y5"]
+    res = build_robdd_from_expr(expr, order1)
+    dottest = to_dot(res1)
+    print("2.5.3")
+    print(dottest)
+    f = open("robddtest.dot", "w")
+    f.write(dottest)
+    f.close()
+    subprocess.run(
+        ["dot", "-Tpng", "robddtest.dot", "-o", "robddtest.png"],
+        check=True
+    )
+    print("\n")"""
     print("Regle sur le nom du fichier:\n robdd\"numéro d'exercice\"\"numéro d'expression\".\n Exemple: robdd241 <=> expression1 de l'exercice 2.4.")
