@@ -159,4 +159,20 @@ if __name__ == "__main__":
     print(f"{'2.5.3':<10} {cd_node3:<10} {time3:<10.6f}")
     print(f"{'2.5.4':<10} {cd_node4:<10} {time4:<10.6f}")
     print("\n")
+
+    expr="(x1.y1)*(x2.y2)*(x3.y3)*(x4.y4)*(x5.y5)"
+    order1 = ["x1","y1","x2","y2","x3","y3","x4","y4","x5","y5"]
+    robdd1 = ROBDD(order1)
+    res = build_robdd_from_expr(expr,order1)
+    dottest = to_dot(res)
+    print("test")
+    print(dottest)
+    f = open("robddtest.dot", "w")
+    f.write(dottest)
+    f.close()
+    subprocess.run(
+        ["dot", "-Tpng", "robddtest.dot", "-o", "robddtest.png"],
+        check=True
+    )
+    print("\n")
     print("Regle sur le nom du fichier:\n robdd\"numéro d'exercice\"\"numéro d'expression\".\n Exemple: robdd241 <=> expression1 de l'exercice 2.4.")

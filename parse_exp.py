@@ -116,9 +116,19 @@ def to_dot(root):
     lines.append("}")
     return "\n".join(lines)
 
-def build_robdd_from_expr(expr, order):
+def heuristique(ast, order):
+    if isinstance(ast, str):
+        order.append(ast)
+    else :
+        order = heuristique(ast[1],order)
+        order = heuristique(ast[2],order)
+    return order
+
+def build_robdd_from_expr(expr, order =[]):
     tokens = tokenize(expr)
     ast = parse(tokens)
+    if order == [] :
+        order = heuristique(ast,order)
     robdd = ROBDD(order)
     root = robdd.build(ast, {}, order)
     return root
