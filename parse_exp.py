@@ -120,8 +120,10 @@ def heuristique(ast, order):
     if isinstance(ast, str):
         order.append(ast)
     else :
-        order = heuristique(ast[1],order)
-        order = heuristique(ast[2],order)
+        if len(ast) > 1 :
+            order = heuristique(ast[1],order)
+            if len(ast) > 2:
+                order = heuristique(ast[2],order)
     return order
 
 def build_robdd_from_expr(expr, order =[]):
