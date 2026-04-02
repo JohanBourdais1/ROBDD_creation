@@ -421,8 +421,12 @@ if __name__ == "__main__":
                     path = counterexample_EU(f, k)
                     print(f"Counterexample path (EU failure): {path}")
                 else:
-                    path = None
-                    print("No counterexample implemented for this operator")
+                    path = counterexample(f, k)
+                    if path != None:
+                        print(f"Counterexample path : {path}")
+                    else:
+                        print("No counterexample implemented for this operator")
+
 
                 if path:
                     print_path(path, k)
