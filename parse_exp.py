@@ -121,7 +121,6 @@ def to_dot(root):
     lines.append("}")
     return "\n".join(lines)
 
-""""Build a ROBDD from a boolean expression string and variable order."""
 def heuristique(ast, order):
     if isinstance(ast, str):
         order.append(ast)
@@ -132,6 +131,7 @@ def heuristique(ast, order):
                 order = heuristique(ast[2],order)
     return order
 
+""""Build a ROBDD from a boolean expression string and variable order."""
 def build_robdd_from_expr(expr, order =[]):
     tokens = tokenize(expr)
     ast = parse(tokens)

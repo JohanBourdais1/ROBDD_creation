@@ -289,6 +289,26 @@ def counterexample_EU(formula, k):
 
     return None
 
+def counterexample(formula, k):
+
+    good = sat(formula, k)
+
+    visited = {k.initial_state}
+    queue = deque([(k.initial_state, [k.initial_state])])
+
+    while queue:
+        state, path = queue.popleft()
+
+        # dès qu’on sort de Sat(φ)
+        if state not in good:
+            return path
+
+        for succ in k.transitions[state]:
+            if succ not in visited:
+                visited.add(succ)
+                queue.append((succ, path + [succ]))
+
+    return None
 
 if __name__ == "__main__":
 
@@ -335,13 +355,71 @@ if __name__ == "__main__":
                 # Générer un contre-exemple simple
                 if s.startswith("AG"):
                     path = counterexample_AG(f, k)
-                    print("Counterexample path (AG violation):")
+                    print(f"Counterexample path (AG violation): {path}")
                 elif s.startswith("EF"):
                     path = counterexample_EF(f, k)
-                    print("Counterexample path (EF failure):")
+                    print(f"Counterexample path (EF failure): {path}")
                 elif s.startswith("E["):
                     path = counterexample_EU(f, k)
-                    print("Counterexample path (EU failure):")
+                    print(f"Counterexample path (EU failure): {path}")
+                else:
+                    path = counterexample(f, k)
+                    if path != None:
+                        print(f"Counterexample path : {path}")
+                    else:
+                        print("No counterexample implemented for this operator")
+
+                if path:
+                    print_path(path, k)
+
+            print("-" * 40)
+
+        print("\n\n")
+    
+
+
+    for i in ["kripke3.txt"]:
+        # Charge le modèle de kirpke
+        k = parse_kripke(i)
+        print("States:", k.states)
+        print("Initial:", k.initial_state)
+        print("Labels:", k.labels)
+        print("Transitions:", k.transitions)
+        print("-" * 40)
+
+        # les formules à tester
+        formulas = [
+            "AG(p0=>EFp3)",
+            "EF(p1=>EGp2)"
+        ]
+
+        # Parcourir les formules
+        for s in formulas:
+            f = parse_ctl(s)
+            print("Formula:", s)
+
+            start = time.time()
+            result = sat(f, k)
+            end = time.time()
+
+            print("Sat(states):", result)
+            print("Time: {:.6f}s".format(end - start))
+
+            if k.initial_state in result:
+                print("Initial state satisfies the formula")
+            else:
+                print("Initial state does NOT satisfy the formula")
+
+                # Générer un contre-exemple simple
+                if s.startswith("AG"):
+                    path = counterexample_AG(f, k)
+                    print(f"Counterexample path (AG violation): {path}")
+                elif s.startswith("EF"):
+                    path = counterexample_EF(f, k)
+                    print(f"Counterexample path (EF failure): {path}")
+                elif s.startswith("E["):
+                    path = counterexample_EU(f, k)
+                    print(f"Counterexample path (EU failure): {path}")
                 else:
                     path = None
                     print("No counterexample implemented for this operator")
@@ -352,17 +430,3 @@ if __name__ == "__main__":
             print("-" * 40)
 
         print("\n\n")
-    
-    k = parse_kripke("kripke1.txt")
-    print("States:", k.states)
-    print("Initial:", k.initial_state)
-    print("Labels:", k.labels)
-    print("Transitions:", k.transitions)
-    f1 = parse_ctl("AF(p0=>EGp3)")
-    print("Formula: AF(p0=>EGp3)")
-    res = sat(f1,k)
-    print("Sat(states):", res)
-    f2 = parse_ctl("EG(p1=>EFp2)")
-    print("Formula:EG(p1=>EFp2)")
-    res = sat(f2,k)
-    print("Sat(states):", res)

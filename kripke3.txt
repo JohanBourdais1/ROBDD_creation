@@ -1,4 +1,4 @@
-states: s0 s1 s2 s3 s4 s5 s6 s7 s8
+states: s0 s1 s2 s3 s4 s5 s6
 init: s0
 
 labels:
