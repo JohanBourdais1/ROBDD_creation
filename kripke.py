@@ -328,9 +328,9 @@ if __name__ == "__main__":
             print("Time: {:.6f}s".format(end - start))
 
             if k.initial_state in result:
-                print("Initial state satisfies the formula ✅")
+                print("Initial state satisfies the formula")
             else:
-                print("Initial state does NOT satisfy the formula ❌")
+                print("Initial state does NOT satisfy the formula")
 
                 # Générer un contre-exemple simple
                 if s.startswith("AG"):
