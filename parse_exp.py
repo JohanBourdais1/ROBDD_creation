@@ -11,6 +11,7 @@ class Node:
 ZERO = Node(None, None, None, 0)
 ONE = Node(None, None, None, 1)
 
+
 class ROBDD:
     def __init__(self, order):
         self.order = order
@@ -39,9 +40,11 @@ class ROBDD:
         right = self.build(expr, env, vars_left[1:])
         return self.mk(v, left, right)
 
+"""Get all the different tokens in a boolean expression."""
 def tokenize(s):
     return re.findall(r'[a-zA-Z]\w*|[()+.*!]', s)
 
+"""Parse a boolean expression in the form of an AST (Abstract Syntax Tree)."""
 def parse(tokens):
     def parse_expr(i):
         node, i = parse_term(i)
@@ -88,6 +91,8 @@ def eval_expr(ast, env):
     if ast[0] == '*':
         return a ^ b
 
+
+"""Print a ROBDD in DOT format for visualization."""
 def to_dot(root):
     lines = ["digraph ROBDD {", "rankdir=TB;"]
     seen = set()
@@ -116,6 +121,7 @@ def to_dot(root):
     lines.append("}")
     return "\n".join(lines)
 
+""""Build a ROBDD from a boolean expression string and variable order."""
 def build_robdd_from_expr(expr, order):
     tokens = tokenize(expr)
     ast = parse(tokens)

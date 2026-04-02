@@ -1,14 +1,13 @@
 states: s0 s1 s2 s3 s4 s5
-
 init: s0
 
 labels:
-s3: p1
 s0: r
 s1: r
 s2: r
+s3: p1
 s4: r
-s5: r
+s5: q
 
 transitions:
 s0: s1

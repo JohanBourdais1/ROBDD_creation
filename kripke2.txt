@@ -1,0 +1,24 @@
+states: s0 s1 s2 s3 s4 s5 s6 s7 s8
+init: s0
+
+labels:
+s0: a
+s1: b
+s2: b
+s3: c
+s4: c
+s5: d
+s6: a
+s7: b
+s8: e
+
+transitions:
+s0: s1 s2
+s1: s3
+s2: s4
+s3: s5
+s4: s5 s6
+s5: s7
+s6: s7 s8
+s7: s0
+s8: s8

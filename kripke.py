@@ -1,5 +1,6 @@
 import re
-
+from collections import deque
+import time
 
 class Kripke:
     def __init__(self):
@@ -8,7 +9,7 @@ class Kripke:
         self.labels = {}
         self.transitions = {}
 
-
+"""Parse a Kripke structure from a file."""
 def parse_kripke(filename):
     k = Kripke()
 
@@ -64,6 +65,7 @@ class Formula:
         return f"({self.left} {self.op} {self.right})"
 
 
+"""Get all the different token types in a CTL formula."""
 def tokenize(s):
     return re.findall(
         r'EX|AX|EF|AF|EG|AG|E|A|U|!|\+|\.|=>|\(|\)|\[|\]|true|false|[a-zA-Z_][a-zA-Z0-9_]*',
@@ -71,6 +73,7 @@ def tokenize(s):
     )
 
 
+"""Parse a CTL formula into an AST (Abstract Syntax Tree)."""
 def parse_ctl(s):
     tokens = tokenize(s)
     return parse_implication(tokens)
@@ -218,17 +221,134 @@ def sat(formula, k):
 
     return set()
 
+def print_path(path, k):
+    for s in path:
+        print(s, "labels:", k.labels[s])
+
+def counterexample_AG(formula, k):
+
+    bad = sat(Formula("!", formula.left), k)
+
+    visited = set()
+    queue = deque([(k.initial_state, [k.initial_state])])
+
+    while queue:
+        state, path = queue.popleft()
+
+        if state in bad:
+            return path
+
+        for succ in k.transitions[state]:
+            if succ not in visited:
+                visited.add(succ)
+                queue.append((succ, path + [succ]))
+
+    return None
+
+def counterexample_EF(formula, k):
+
+    target = sat(formula.left, k)
+
+    visited = set()
+    queue = deque([(k.initial_state, [k.initial_state])])
+
+    while queue:
+        state, path = queue.popleft()
+
+        if state in target:
+            return path
+
+        for succ in k.transitions[state]:
+            if succ not in visited:
+                visited.add(succ)
+                queue.append((succ, path + [succ]))
+
+    return None
+
+def counterexample_EU(formula, k):
+
+    phi = sat(formula.left, k)
+    psi = sat(formula.right, k)
+
+    visited = set()
+    queue = deque([(k.initial_state, [k.initial_state])])
+
+    while queue:
+        state, path = queue.popleft()
+
+        if state in psi:
+            return path
+
+        if state not in phi:
+            return path
+
+        for succ in k.transitions[state]:
+            if succ not in visited:
+                visited.add(succ)
+                queue.append((succ, path + [succ]))
+
+    return None
+
 
 if __name__ == "__main__":
 
-    k = parse_kripke("kripke.txt")
+    for i in ["kripke1.txt", "kripke2.txt"]:
+        # Charge le modèle de kirpke
+        k = parse_kripke(i)
+        print("States:", k.states)
+        print("Initial:", k.initial_state)
+        print("Labels:", k.labels)
+        print("Transitions:", k.transitions)
+        print("-" * 40)
 
-    print("States:", k.states)
-    print("Initial:", k.initial_state)
-    print("Labels:", k.labels)
-    print("Transitions:", k.transitions)
+        # les formules à tester
+        formulas = [
+            "EF p1",
+            "AF p1",
+            "EG r",
+            "AG r",
+            "E[r U p1]",
+            "EX r",
+            "AX r",
+            "!(EG q)",
+            "EF (r + p1)",
+            "AF (p1 . r)"
+        ]
 
-    f = parse_ctl("EG r")
-    states = sat(f, k)
+        # Parcourir les formules
+        for s in formulas:
+            f = parse_ctl(s)
+            print("Formula:", s)
 
-    print("States satisfying EG r:", states)
+            start = time.time()
+            result = sat(f, k)
+            end = time.time()
+
+            print("Sat(states):", result)
+            print("Time: {:.6f}s".format(end - start))
+
+            if k.initial_state in result:
+                print("Initial state satisfies the formula ✅")
+            else:
+                print("Initial state does NOT satisfy the formula ❌")
+
+                # Générer un contre-exemple simple
+                if s.startswith("AG"):
+                    path = counterexample_AG(f, k)
+                    print("Counterexample path (AG violation):")
+                elif s.startswith("EF"):
+                    path = counterexample_EF(f, k)
+                    print("Counterexample path (EF failure):")
+                elif s.startswith("E["):
+                    path = counterexample_EU(f, k)
+                    print("Counterexample path (EU failure):")
+                else:
+                    path = None
+                    print("No counterexample implemented for this operator")
+
+                if path:
+                    print_path(path, k)
+
+            print("-" * 40)
+
+        print("\n\n")
