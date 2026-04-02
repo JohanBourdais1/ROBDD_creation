@@ -2,15 +2,15 @@ states: s0 s1 s2 s3 s4 s5 s6 s7 s8
 init: s0
 
 labels:
-s0: a
-s1: b
-s2: b
-s3: c
-s4: c
-s5: d
-s6: a
-s7: b
-s8: e
+s0: p0
+s1: p1
+s2: p1
+s3: p2
+s4: p2
+s5: p3
+s6: p0
+s7: p1
+s8: p4
 
 transitions:
 s0: s1 s2

@@ -325,14 +325,15 @@ if __name__ == "__main__":
         formulas = [
             "EF p1",
             "AF p1",
-            "EG r",
-            "AG r",
-            "E[r U p1]",
-            "EX r",
-            "AX r",
-            "!(EG q)",
-            "EF (r + p1)",
-            "AF (p1 . r)"
+            "EG p0",
+            "AG p0",
+            "E[p0 U p1]",
+            "EX p0",
+            "AX p0",
+            "AX p2",
+            "!(EG p2)",
+            "EF (p0 + p1)",
+            "AF (p1 . p0)"
         ]
 
         # Parcourir les formules
