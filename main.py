@@ -160,7 +160,7 @@ if __name__ == "__main__":
     print(f"{'2.5.4':<10} {cd_node4:<10} {time4:<10.6f}")
     print("\n")
 
-    expr="(x2 + y1).!x1"
+    expr="(x1.y1)*(x2.y2)*(x3.y3)*(x4.y4)*(x5*y5)"
     res = build_robdd_from_expr(expr)
     dottest = to_dot(res)
     print("test")
