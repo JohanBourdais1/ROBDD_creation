@@ -352,3 +352,17 @@ if __name__ == "__main__":
             print("-" * 40)
 
         print("\n\n")
+    
+    k = parse_kripke("kripke1.txt")
+    print("States:", k.states)
+    print("Initial:", k.initial_state)
+    print("Labels:", k.labels)
+    print("Transitions:", k.transitions)
+    f1 = parse_ctl("AF(p0=>EGp3)")
+    print("Formula: AF(p0=>EGp3)")
+    res = sat(f1,k)
+    print("Sat(states):", res)
+    f2 = parse_ctl("EG(p1=>EFp2)")
+    print("Formula:EG(p1=>EFp2)")
+    res = sat(f2,k)
+    print("Sat(states):", res)
