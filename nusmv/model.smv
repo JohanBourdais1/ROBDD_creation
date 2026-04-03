@@ -19,8 +19,13 @@ ASSIGN
     init(master_state) := Idle;
     init(slave_state)  := Idle;
 
-    init(CS) := TRUE;  -- CS inactif (actif bas)
+    init(CS) := TRUE;
     init(SCLK) := FALSE;
+    init(MOSI) := FALSE;
+    init(MISO) := FALSE;
+    init(req) := FALSE;
+    init(done) := FALSE;
+    init(data_ready) := FALSE;
 
 -- =========================
 -- MASTER
@@ -30,28 +35,29 @@ ASSIGN
         case
             master_state = Idle & req : Select_Slave;
             master_state = Select_Slave : Send;
-            master_state = Send & done : Wait_Response;
+            master_state = Send & slave_state = Transfer : Wait_Response;
             master_state = Wait_Response & data_ready : Process;
             master_state = Process : Idle;
             TRUE : master_state;
         esac;
 
--- Gestion CS
     next(CS) :=
         case
             master_state = Select_Slave : FALSE;
-            master_state = Process : TRUE;
+            master_state = Process & slave_state = Wait_CS_High : TRUE;
             TRUE : CS;
         esac;
 
--- Horloge (simplifiée)
-    next(SCLK) := !SCLK;
+    next(SCLK) := 
+        case
+            master_state = Send | master_state = Wait_Response : !SCLK;
+            TRUE : FALSE;
+        esac;
 
--- MOSI (envoi)
     next(MOSI) :=
         case
             master_state = Send : TRUE;
-            TRUE : MOSI;
+            TRUE : FALSE;
         esac;
 
 -- =========================
@@ -61,16 +67,15 @@ ASSIGN
     next(slave_state) :=
         case
             slave_state = Idle & CS = FALSE : Selected;
-            slave_state = Selected : Transfer;
-            slave_state = Transfer & CS = TRUE : Wait_CS_High;
+            slave_state = Selected & CS = FALSE : Transfer;
+            slave_state = Transfer & master_state = Process : Wait_CS_High;
             slave_state = Wait_CS_High : Idle;
             TRUE : slave_state;
         esac;
 
--- MISO (réponse)
     next(MISO) :=
         case
-            slave_state = Transfer : TRUE;
+            slave_state = Transfer & master_state != Process : TRUE;
             TRUE : FALSE;
         esac;
 
@@ -78,9 +83,18 @@ ASSIGN
 -- ENV (simplification)
 -- =========================
 
-    next(req) := {TRUE, FALSE};
-    next(done) := {TRUE, FALSE};
-    next(data_ready) := {TRUE, FALSE};
+    next(req) := 
+        case
+            master_state = Idle : {TRUE, FALSE};
+            TRUE : FALSE;
+        esac;
+    
+    next(data_ready) := 
+        case
+            slave_state = Transfer & master_state = Wait_Response : TRUE;
+            master_state = Process : FALSE;
+            TRUE : data_ready;
+        esac;
 
 -- =========================
 -- Propiété
