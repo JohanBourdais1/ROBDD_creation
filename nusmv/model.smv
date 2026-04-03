@@ -9,22 +9,17 @@ VAR
     MISO : boolean;
     SCLK : boolean;
 
-    req        : boolean;
-    done       : boolean;
+    request : boolean;
     data_ready : boolean;
 
 ASSIGN
-
--- Initialisation
     init(master_state) := Idle;
     init(slave_state)  := Idle;
-
     init(CS) := TRUE;
     init(SCLK) := FALSE;
     init(MOSI) := FALSE;
     init(MISO) := FALSE;
-    init(req) := FALSE;
-    init(done) := FALSE;
+    init(request) := FALSE;
     init(data_ready) := FALSE;
 
 -- =========================
@@ -33,7 +28,7 @@ ASSIGN
 
     next(master_state) :=
         case
-            master_state = Idle & req : Select_Slave;
+            master_state = Idle & request : Select_Slave;
             master_state = Select_Slave : Send;
             master_state = Send & slave_state = Transfer : Wait_Response;
             master_state = Wait_Response & data_ready : Process;
@@ -80,10 +75,10 @@ ASSIGN
         esac;
 
 -- =========================
--- ENV (simplification)
+-- ENVIRONMENT
 -- =========================
 
-    next(req) := 
+    next(request) := 
         case
             master_state = Idle : {TRUE, FALSE};
             TRUE : FALSE;
@@ -102,5 +97,5 @@ ASSIGN
 
 SPEC AG (CS = TRUE -> MISO = FALSE)
 SPEC AG (master_state = Process -> data_ready = TRUE)
-LTLSPEC G (req -> F data_ready)
-LTLSPEC G (req -> F (master_state = Idle))
+LTLSPEC G (request -> F data_ready)
+LTLSPEC G (request -> F (master_state = Idle))
