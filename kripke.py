@@ -9,7 +9,6 @@ class Kripke:
         self.labels = {}
         self.transitions = {}
 
-"""Parse a Kripke structure from a file."""
 def parse_kripke(filename):
     k = Kripke()
 
@@ -65,7 +64,6 @@ class Formula:
         return f"({self.left} {self.op} {self.right})"
 
 
-"""Get all the different token types in a CTL formula."""
 def tokenize(s):
     return re.findall(
         r'EX|AX|EF|AF|EG|AG|E|A|U|!|\+|\.|=>|\(|\)|\[|\]|true|false|[a-zA-Z_][a-zA-Z0-9_]*',
@@ -73,7 +71,6 @@ def tokenize(s):
     )
 
 
-"""Parse a CTL formula into an AST (Abstract Syntax Tree)."""
 def parse_ctl(s):
     tokens = tokenize(s)
     return parse_implication(tokens)
