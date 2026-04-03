@@ -82,3 +82,11 @@ ASSIGN
     next(done) := {TRUE, FALSE};
     next(data_ready) := {TRUE, FALSE};
 
+-- =========================
+-- Propiété
+-- =========================
+
+SPEC AG (CS = TRUE -> MISO = FALSE)
+SPEC AG (master_state = Process -> data_ready = TRUE)
+LTLSPEC G (req -> F data_ready)
+LTLSPEC G (req -> F (master_state = Idle))
