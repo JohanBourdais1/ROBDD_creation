@@ -1,0 +1,84 @@
+MODULE main
+
+VAR
+    master_state : {Idle, Select_Slave, Send, Wait_Response, Process, Error};
+    slave_state  : {Idle, Selected, Transfer, Wait_CS_High, Error};
+
+    CS   : boolean;
+    MOSI : boolean;
+    MISO : boolean;
+    SCLK : boolean;
+
+    req        : boolean;
+    done       : boolean;
+    data_ready : boolean;
+
+ASSIGN
+
+-- Initialisation
+    init(master_state) := Idle;
+    init(slave_state)  := Idle;
+
+    init(CS) := TRUE;  -- CS inactif (actif bas)
+    init(SCLK) := FALSE;
+
+-- =========================
+-- MASTER
+-- =========================
+
+    next(master_state) :=
+        case
+            master_state = Idle & req : Select_Slave;
+            master_state = Select_Slave : Send;
+            master_state = Send & done : Wait_Response;
+            master_state = Wait_Response & data_ready : Process;
+            master_state = Process : Idle;
+            TRUE : master_state;
+        esac;
+
+-- Gestion CS
+    next(CS) :=
+        case
+            master_state = Select_Slave : FALSE;
+            master_state = Process : TRUE;
+            TRUE : CS;
+        esac;
+
+-- Horloge (simplifiée)
+    next(SCLK) := !SCLK;
+
+-- MOSI (envoi)
+    next(MOSI) :=
+        case
+            master_state = Send : TRUE;
+            TRUE : MOSI;
+        esac;
+
+-- =========================
+-- SLAVE
+-- =========================
+
+    next(slave_state) :=
+        case
+            slave_state = Idle & CS = FALSE : Selected;
+            slave_state = Selected : Transfer;
+            slave_state = Transfer & CS = TRUE : Wait_CS_High;
+            slave_state = Wait_CS_High : Idle;
+            TRUE : slave_state;
+        esac;
+
+-- MISO (réponse)
+    next(MISO) :=
+        case
+            slave_state = Transfer : TRUE;
+            TRUE : FALSE;
+        esac;
+
+-- =========================
+-- ENV (simplification)
+-- =========================
+
+    next(req) := {TRUE, FALSE};
+    next(done) := {TRUE, FALSE};
+    next(data_ready) := {TRUE, FALSE};
+
