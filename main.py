@@ -173,4 +173,3 @@ if __name__ == "__main__":
         check=True
     )
     print("\n")
-    print("Regle sur le nom du fichier:\n robdd\"numéro d'exercice\"\"numéro d'expression\".\n Exemple: robdd241 <=> expression1 de l'exercice 2.4.")
